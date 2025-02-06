@@ -14,7 +14,7 @@ public class ToDoController {
     @Autowired
     private TodoRepository todoRepository;
 
-    @GetMapping ("/todo")
+    @GetMapping("/todo")
     public ResponseEntity<Todo> get(@RequestParam(value = "id") int id){
 
         // get todo from db by id
@@ -26,20 +26,20 @@ public class ToDoController {
         return new ResponseEntity("No todo found with id " + id, HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping ("/todo/all")
+    @GetMapping("/todo/all")
     public ResponseEntity<Iterable<Todo>> getAll(){
         Iterable<Todo> allTodosInDb = todoRepository.findAll();
         return new ResponseEntity<Iterable<Todo>>(allTodosInDb, HttpStatus.OK);
     }
 
-    @PostMapping ("/todo")
+    @PostMapping("/todo")
     public ResponseEntity<Todo> create(@RequestBody Todo newTodo) {
         //save todo in db
         todoRepository.save(newTodo);
         return new ResponseEntity<Todo>(newTodo, HttpStatus.OK);
     }
 
-    @DeleteMapping ("/todo")
+    @DeleteMapping("/todo")
     public ResponseEntity delete(@RequestParam(value = "id") int id){
 
         Optional<Todo> todoInDb = todoRepository.findById(id);
@@ -51,4 +51,34 @@ public class ToDoController {
 
         return new ResponseEntity("No todo to delete found with id " + id, HttpStatus.NOT_FOUND);
     }
+
+    @PutMapping("/todo")
+    public ResponseEntity<Todo> edit(@RequestBody Todo editedTodo){
+
+         Optional<Todo> todoInDb = todoRepository.findById(editedTodo.getId());
+
+         if(todoInDb.isPresent()){
+             // update
+             Todo saveTodo = todoRepository.save(editedTodo);
+             return new ResponseEntity<Todo>(saveTodo, HttpStatus.OK);
+         }
+
+         return new ResponseEntity("No todo to update found with id " + editedTodo.getId(), HttpStatus.NOT_FOUND);
+    }
+
+    @PatchMapping("/todo/setDone")
+    public ResponseEntity<Todo> setDone(@RequestParam(value = "isDone") boolean isDone, @RequestParam(value = "id") int id){
+
+        Optional<Todo> todoInDb = todoRepository.findById(id);
+
+        if(todoInDb.isPresent()){
+            // update isDone
+            todoInDb.get().setIsDone(isDone);
+            Todo saveTodo = todoRepository.save(todoInDb.get());
+            return new ResponseEntity<Todo>(saveTodo, HttpStatus.OK);
+        }
+
+        return new ResponseEntity("No todo to update found with id " + id, HttpStatus.NOT_FOUND);
+    }
+
 }
