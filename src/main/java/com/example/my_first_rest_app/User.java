@@ -2,11 +2,14 @@ package com.example.my_first_rest_app;
 
 import jakarta.persistence.*;
 
+
+import java.util.Set;
+
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(unique = true, nullable = false)
@@ -14,6 +17,9 @@ public class User {
 
     private String password;
 
+    @OneToMany
+    @JoinColumn(name = "userID")
+    private Set<Todo> todos;
 
     //Getter and Setter
     public Integer getId() {
@@ -40,5 +46,11 @@ public class User {
         this.password = password;
     }
 
+    public Set<Todo> getTodos() {
+        return todos;
+    }
 
+    public void setTodos(Set<Todo> todos) {
+        this.todos = todos;
+    }
 }

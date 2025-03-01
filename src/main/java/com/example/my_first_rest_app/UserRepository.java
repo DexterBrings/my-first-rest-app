@@ -1,4 +1,6 @@
 package com.example.my_first_rest_app;
 
-public interface UserRepository {
+import org.springframework.data.repository.CrudRepository;
+
+public interface UserRepository extends CrudRepository<User, Integer> {
 }
