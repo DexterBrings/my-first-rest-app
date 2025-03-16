@@ -14,6 +14,9 @@ public class ToDoController {
     @Autowired
     private TodoRepository todoRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @GetMapping("/todo")
     public ResponseEntity<Todo> get(@RequestParam(value = "id") int id){
 
@@ -27,9 +30,18 @@ public class ToDoController {
     }
 
     @GetMapping("/todo/all")
-    public ResponseEntity<Iterable<Todo>> getAll(){
-        Iterable<Todo> allTodosInDb = todoRepository.findAll();
-        return new ResponseEntity<Iterable<Todo>>(allTodosInDb, HttpStatus.OK);
+    public ResponseEntity<Iterable<Todo>> getAll(@RequestHeader("api-secret") String secret){
+
+        var userBySecret = userRepository.findBySecret(secret);
+
+        if(userBySecret.isPresent()) {
+
+            Iterable<Todo> allTodosInDb = todoRepository.findAll();
+            return new ResponseEntity<Iterable<Todo>>(allTodosInDb, HttpStatus.OK);
+        }
+
+        return new ResponseEntity("Kein Zugang möglich!", HttpStatus.BAD_REQUEST);
+
     }
 
     @PostMapping("/todo")
